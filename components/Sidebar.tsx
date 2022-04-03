@@ -28,6 +28,10 @@ export default function Sidebar() {
         </div>
       </section>
 
+      <section>
+        <button className="w-full font-semibold uppercase border-y bg-white py-4" type="button">Start a new chat</button>
+      </section>
+
 
     </main>
   );
