@@ -1,12 +1,15 @@
 import { DotsVerticalIcon, AnnotationIcon, SearchIcon } from '@heroicons/react/solid';
+import * as EmailValidator from 'email-validator';
 
 export default function Sidebar() {
   const createChat = () => {
     const input = prompt('Please enter email address for the user you wish to chat with');
 
-    if (!input || !input.trim()) {}return null;
+    if (!input || !input.trim()) return null;
 
-    
+    if (EmailValidator.validate(input)) {
+      // add chat in to the DB 'wa-chat' collection
+    }
   };
   return (
     <main className="sticky top-0 z-50 border-b bg-white shadow-sm">
