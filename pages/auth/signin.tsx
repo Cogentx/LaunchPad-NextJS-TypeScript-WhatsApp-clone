@@ -15,7 +15,9 @@ export default function Signin() {
         </div>
 
         {/* Message */}
-        <div></div>
+        <p className="font-xs italic">
+          WhatsApp Clone built for Educational Purposes Only
+        </p>
 
         {/* Signin Button */}
         <div>
