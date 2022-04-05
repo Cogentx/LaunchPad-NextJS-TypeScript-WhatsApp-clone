@@ -3,25 +3,27 @@ import Image from 'next/image';
 
 export default function Signin() {
   return (
-    <>
+    <section className="grid h-screen place-items-center bg-[#f5f5f5]">
       <Head>
         <title>Login</title>
       </Head>
 
-      <main className="mt-20 flex min-h-screen flex-col items-center py-2 px-14">
+      <div className="flex flex-col items-center bg-white p-[100px] border rounded-lg shadow-lg">
         {/* Logo */}
-        <section className="relative flex h-[200px] w-[200px] items-center">
+        <div className="relative mb-12 flex h-[200px] w-[200px] items-center justify-center">
           <Image src="/WhatsAppLogo.png" alt="WhatsApp Logo" layout="fill" objectFit="contain" priority />
-        </section>
+        </div>
 
         {/* Message */}
-        <section></section>
+        <div></div>
 
         {/* Signin Button */}
-        <section>
-          <button className="font-semibold uppercase">Sign in with Google</button>
-        </section>
-      </main>
-    </>
+        <div>
+          <button className="rounded-lg p-3 font-semibold uppercase text-black border">
+            Sign in with Google
+          </button>
+        </div>
+      </div>
+    </section>
   );
 }

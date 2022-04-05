@@ -12,7 +12,7 @@ export default function Sidebar() {
     }
   };
   return (
-    <main className="sticky top-0 z-50 border-b bg-white shadow-sm">
+    <section className="sticky top-0 z-50 border-b bg-[#f5f5f5] shadow-sm">
       <header className="flex h-14 items-center justify-between p-4">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -26,28 +26,26 @@ export default function Sidebar() {
         </div>
       </header>
 
-      <section>
-        <div className="flex-1">
-          <div className="relative mt-1 rounded-md p-3">
-            <div className="pointer-events-none absolute inset-y-0 flex items-center pl-3">
-              <SearchIcon className="h-5 text-gray-500" />
-            </div>
-            <input
-              type="text"
-              placeholder="Search..."
-              className="block w-full rounded-md border-gray-300 bg-gray-50 pl-10 focus:border-black focus:ring-black sm:text-sm"
-            />
+      <div className="flex-1">
+        <div className="relative mt-1 rounded-md p-3">
+          <div className="pointer-events-none absolute inset-y-0 flex items-center pl-3">
+            <SearchIcon className="h-5 text-gray-500" />
           </div>
+          <input
+            type="text"
+            placeholder="Search..."
+            className="block w-full rounded-md border-gray-300 bg-gray-50 pl-10 focus:border-black focus:ring-black sm:text-sm"
+          />
         </div>
-      </section>
+      </div>
 
-      <section>
+      <div>
         <button className="w-full border-y bg-white py-4 font-semibold uppercase" type="button" onClick={createChat}>
           Start a new chat
         </button>
-      </section>
+      </div>
 
-      <section>{/* list of chats */}</section>
-    </main>
+      <div>{/* list of chats */}</div>
+    </section>
   );
 }
