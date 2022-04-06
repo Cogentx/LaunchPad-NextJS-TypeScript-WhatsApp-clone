@@ -1,0 +1,5 @@
+interface IChatMessage {
+  
+}
+
+export { IChatMessage };
