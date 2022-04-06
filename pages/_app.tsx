@@ -10,6 +10,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   if (!user) return <Signin/>
 
+console.log({user});
 
   return <Component {...pageProps} />;
 }
