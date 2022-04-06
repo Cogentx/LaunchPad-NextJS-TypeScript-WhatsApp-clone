@@ -1,5 +1,7 @@
+import { signOut as signOutFromProvider } from 'firebase/auth';
 import { DotsVerticalIcon, AnnotationIcon, SearchIcon } from '@heroicons/react/solid';
 import * as EmailValidator from 'email-validator';
+import { auth } from '../firebase';
 
 export default function Sidebar() {
   const createChat = () => {
@@ -11,11 +13,17 @@ export default function Sidebar() {
       // add chat in to the DB 'wa-chat' collection
     }
   };
+
+  const signOut = () => {
+    signOutFromProvider(auth);
+  };
+
   return (
     <section className="sticky top-0 z-50 border-b bg-[#f5f5f5] shadow-sm">
       <header className="flex h-14 items-center justify-between p-4">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
+          onClick={signOut}
           src="https://avatars.githubusercontent.com/u/48112040?s=96&v=4"
           alt="Profile Picture"
           className="h-10 w-10 cursor-pointer rounded-full border-[2px]"
