@@ -1,6 +1,7 @@
 import { signOut as signOutFromProvider, UserInfo } from 'firebase/auth';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, query, where } from 'firebase/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { useCollection } from 'react-firebase-hooks/firestore';
 import * as EmailValidator from 'email-validator';
 import { DotsVerticalIcon, AnnotationIcon, SearchIcon } from '@heroicons/react/solid';
 import { auth, chats_url, db } from '../firebase';
@@ -8,6 +9,16 @@ import { auth, chats_url, db } from '../firebase';
 export default function Sidebar() {
   const [user] = useAuthState(auth);
   const chatsCollectionRef = collection(db, chats_url);
+  const userChatQuery = query(chatsCollectionRef, where('users', 'array-contains', user?.email));
+  const [chatsSnapshot] = useCollection(userChatQuery);
+
+  /** Does Chat Already Exists?
+   * Check 'users' array found within 'useCollection' snapshot to find if 'yourEmail' already exists. If it does, then a chat already exists so don't create a new one.
+   * @param yourEmail
+   * @returns Boolean
+   */
+  const chatAlreadyExists = (yourEmail: string) =>
+    !!chatsSnapshot?.docs.find((chat) => chat.data().users.find((email: string) => email === yourEmail)?.length > 0);
 
   const signOut = () => {
     signOutFromProvider(auth);
@@ -26,20 +37,40 @@ export default function Sidebar() {
 
     const input = prompt('Please enter email address for the user you wish to chat with');
 
-    if (!input || !input.trim()) return null;
+    if (!input || !input.trim()) return;
 
-    if (EmailValidator.validate(input)) {
-      // add chat in to the DB 'wa-chat' collection
-      const myEmail = user.email as string;
-      const yourEmail = input.trim();
-      createChat(myEmail,yourEmail);
-    }
+    const myEmail = user.email as string;
+    const yourEmail = input.trim();
+
+    if (!okayToCreateChat(myEmail, yourEmail)) return;
+
+    // All Checks pass... create a new chat!
+    createChat(myEmail, yourEmail);
   };
 
-  const createChat = async (myEmail: string,yourEmail: string) => {
+  const createChat = async (myEmail: string, yourEmail: string) => {
     const docRef = await addDoc(chatsCollectionRef, {
-      users: [myEmail,yourEmail],
+      users: [myEmail, yourEmail],
     });
+  };
+
+  /** Validation - okayToCreateChat */
+  const okayToCreateChat = (myEmail: string, yourEmail: string) => {
+    let message = '';
+    // is email valid?
+    if (!EmailValidator.validate(yourEmail) || myEmail === yourEmail) {
+      message = 'Email not valid';
+    }
+
+    // TODO: does 'yourEmail' exist as a 'registered user'?
+
+    // does chat already exist?
+    if (chatAlreadyExists(yourEmail)) {
+      message = 'Chat already exists';
+    }
+
+    // TODO: handle error message
+    return !!message;
   };
 
   // const postChatMessage = async () => {
