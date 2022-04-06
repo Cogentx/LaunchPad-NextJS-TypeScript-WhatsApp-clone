@@ -9,7 +9,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   const [user, loading] = useAuthState(auth);
 
-  if (true) return <Loading/>;
+  if (loading) return <Loading/>;
   if (!user) return <Signin/>
 
   return <Component {...pageProps} />;
