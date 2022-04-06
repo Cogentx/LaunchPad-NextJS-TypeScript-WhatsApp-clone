@@ -19,4 +19,7 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 const authProviderGoogle = new GoogleAuthProvider();
 
-export { db, auth, authProviderGoogle };
+// Firebase-related constants
+const users_url = 'users';
+
+export { db, auth, authProviderGoogle, users_url };
