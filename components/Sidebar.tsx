@@ -66,9 +66,6 @@ export default function Sidebar() {
       message = 'Chat already exists';
     }
 
-    // TODO: remove debug
-    console.log('okayToCreateChat: ', !message, { message }, { loggedInUserEmail }, { recipientEmail });
-
     // TODO: handle error message
     return !message;
   };
