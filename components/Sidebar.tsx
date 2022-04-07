@@ -5,6 +5,7 @@ import { useCollection } from 'react-firebase-hooks/firestore';
 import * as EmailValidator from 'email-validator';
 import { DotsVerticalIcon, AnnotationIcon, SearchIcon } from '@heroicons/react/solid';
 import { auth, chats_url, db } from '../firebase';
+import Chat from './Chat';
 
 export default function Sidebar() {
   const [user] = useAuthState(auth);
@@ -13,18 +14,18 @@ export default function Sidebar() {
   const [chatsSnapshot] = useCollection(userChatQuery);
 
   /** Does Chat Already Exists?
-   * Check 'users' array found within 'useCollection' snapshot to find if 'yourEmail' already exists. If it does, then a chat already exists so don't create a new one.
-   * @param yourEmail
+   * Check 'users' array found within 'useCollection' snapshot to find if 'recipientEmail' already exists. If it does, then a chat already exists so don't create a new one.
+   * @param recipientEmail
    * @returns Boolean
    */
-  const chatAlreadyExists = (yourEmail: string) =>
-    !!chatsSnapshot?.docs.find((chat) => chat.data().users.find((email: string) => email === yourEmail)?.length > 0);
+  const chatAlreadyExists = (recipientEmail: string) =>
+    !!chatsSnapshot?.docs.find((chat) => chat.data().users.find((email: string) => email === recipientEmail)?.length > 0);
 
   const signOut = () => {
     signOutFromProvider(auth);
   };
 
-  /**
+  /** Event Handler - handleCreateChat
    * In Firestore, we have 'chats' Collection
    * Each Document in the 'chats' Collection will represent a one-to-one chat between registered users.
    * Each Document will contain an array of 'users' participating in this particular chat.
@@ -39,38 +40,42 @@ export default function Sidebar() {
 
     if (!input || !input.trim()) return;
 
-    const myEmail = user.email as string;
-    const yourEmail = input.trim();
+    const loggedInUserEmail = user.email as string;
+    const recipientEmail = input.trim();
 
-    if (!okayToCreateChat(myEmail, yourEmail)) return;
+    if (!okayToCreateChat(loggedInUserEmail, recipientEmail)) return;
 
     // All Checks pass... create a new chat!
-    createChat(myEmail, yourEmail);
-  };
-
-  const createChat = async (myEmail: string, yourEmail: string) => {
-    const docRef = await addDoc(chatsCollectionRef, {
-      users: [myEmail, yourEmail],
-    });
+    createChat(loggedInUserEmail, recipientEmail);
   };
 
   /** Validation - okayToCreateChat */
-  const okayToCreateChat = (myEmail: string, yourEmail: string) => {
+  const okayToCreateChat = (loggedInUserEmail: string, recipientEmail: string) => {
     let message = '';
     // is email valid?
-    if (!EmailValidator.validate(yourEmail) || myEmail === yourEmail) {
+    if (!EmailValidator.validate(recipientEmail) || loggedInUserEmail === recipientEmail) {
       message = 'Email not valid';
     }
 
-    // TODO: does 'yourEmail' exist as a 'registered user'?
+    // TODO: does 'recipientEmail' exist as a 'registered user'?
 
     // does chat already exist?
-    if (chatAlreadyExists(yourEmail)) {
+    if (chatAlreadyExists(recipientEmail)) {
       message = 'Chat already exists';
     }
 
+    // TODO: remove debug
+    console.log('okayToCreateChat: ', !message, { message }, { loggedInUserEmail }, { recipientEmail });
+
     // TODO: handle error message
-    return !!message;
+    return !message;
+  };
+
+  /** Firestore Logic - createChat */
+  const createChat = async (loggedInUserEmail: string, recipientEmail: string) => {
+    const docRef = await addDoc(chatsCollectionRef, {
+      users: [loggedInUserEmail, recipientEmail],
+    });
   };
 
   // const postChatMessage = async () => {
@@ -82,7 +87,7 @@ export default function Sidebar() {
   // };
 
   return (
-    <section className="sticky top-0 z-50 border-b bg-[#f5f5f5] shadow-sm">
+    <aside className="sticky top-0 z-50 border-b bg-[#f5f5f5] shadow-sm">
       <header className="flex h-14 items-center justify-between p-4">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -120,7 +125,12 @@ export default function Sidebar() {
         </button>
       </div>
 
-      <div>{/* list of chats */}</div>
-    </section>
+      <menu>
+        {/* list of chats */}
+        {chatsSnapshot?.docs.map((chat) => (
+          <Chat key={chat.id} id={chat.id} users={chat.data().users} />
+        ))}
+      </menu>
+    </aside>
   );
 }
