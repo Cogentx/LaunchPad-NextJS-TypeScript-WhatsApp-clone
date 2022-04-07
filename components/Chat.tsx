@@ -1,4 +1,5 @@
 import { collection, query, where } from 'firebase/firestore';
+import { useRouter } from 'next/router';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollection } from 'react-firebase-hooks/firestore';
 import { auth, db, users_url } from '../firebase';
@@ -10,6 +11,7 @@ type IProps = {
 };
 
 export default function Chat({ id, users }: IProps) {
+  const router = useRouter();
   const [user] = useAuthState(auth);
   const recipientEmail = getRecipientEmail(users, user?.email as string);
 
@@ -18,9 +20,10 @@ export default function Chat({ id, users }: IProps) {
 
   const recipient = recipientSnapshot?.docs.map((user: any) => user.data())[0];
 
+  const enterChat = async () => await router.push(`/chat/${id}`);
 
   return (
-    <li>
+    <li onClick={enterChat}>
       <div className="flex cursor-pointer items-center break-words p-4 hover:bg-[#e9eaeb]">
         {recipient && recipient.photoURL ? (
           <div>
@@ -28,8 +31,8 @@ export default function Chat({ id, users }: IProps) {
             <img src={recipient.photoURL} alt="Profile Picture" className="m-2 mr-4 h-10 w-10 rounded-full" />
           </div>
         ) : (
-          <div className="m-2 mr-4 h-10 w-10 flex items-center justify-center bg-gray-500 text-white rounded-full">
-            <p className="uppercase text-sm">{recipientEmail[0]}</p>
+          <div className="m-2 mr-4 flex h-10 w-10 items-center justify-center rounded-full bg-gray-500 text-white">
+            <p className="text-sm uppercase">{recipientEmail[0]}</p>
           </div>
         )}
         <p>{recipientEmail}</p>
