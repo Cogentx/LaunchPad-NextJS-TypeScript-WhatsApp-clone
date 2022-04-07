@@ -1,24 +1,27 @@
 import { collection, doc, getDoc, getDocs, orderBy, query } from 'firebase/firestore';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
+import { useAuthState } from 'react-firebase-hooks/auth';
 import ChatScreen from '../../components/ChatScreen';
 import Sidebar from '../../components/Sidebar';
-import { chats_url, db, messages_url, users_url } from '../../firebase';
+import { auth, chats_url, db, messages_url, users_url } from '../../firebase';
+import { getRecipientEmail } from '../../lib/utils/getRecipientEmail';
 
 type IProps = {
   messages: any;
-  chat: {id:string;users:string[]}
+  chat: { id: string; users: string[] };
 };
 
-export default function ChatPage({ messages,chat }: IProps) {
+export default function ChatPage({ messages, chat }: IProps) {
   console.log(JSON.parse(messages));
   console.log(chat);
-
+  const [user] = useAuthState(auth);
+  const recipientEmail = getRecipientEmail(chat.users,user?.email as string);
 
   return (
     <div className="flex">
       <Head>
-        <title>Chat</title>
+        <title>Chat with {recipientEmail}</title>
       </Head>
 
       <Sidebar />
@@ -50,10 +53,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const chat = {
     id: chatResponse.id,
     ...chatResponse.data(),
-  }
+  };
 
-  console.log(chat);
-
+  console.log(chat, messages);
 
   return {
     props: {
