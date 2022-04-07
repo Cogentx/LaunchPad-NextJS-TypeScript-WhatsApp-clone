@@ -20,8 +20,10 @@ export default function Chat({ id, users }: IProps) {
 
   const recipient = recipientSnapshot?.docs.map((user: any) => user.data())[0];
 
+  const enterChat = async () => await router.push(`/chat/${id}`);
+
   return (
-    <li>
+    <li onClick={enterChat}>
       <div className="flex cursor-pointer items-center break-words p-4 hover:bg-[#e9eaeb]">
         {recipient && recipient.photoURL ? (
           <div>
