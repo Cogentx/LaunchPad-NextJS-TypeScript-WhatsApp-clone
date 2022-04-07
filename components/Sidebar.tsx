@@ -19,7 +19,9 @@ export default function Sidebar() {
    * @returns Boolean
    */
   const chatAlreadyExists = (recipientEmail: string) =>
-    !!chatsSnapshot?.docs.find((chat) => chat.data().users.find((email: string) => email === recipientEmail)?.length > 0);
+    !!chatsSnapshot?.docs.find(
+      (chat) => chat.data().users.find((email: string) => email === recipientEmail)?.length > 0
+    );
 
   const signOut = () => {
     signOutFromProvider(auth);
@@ -89,13 +91,17 @@ export default function Sidebar() {
   return (
     <aside className="sticky top-0 z-50 border-b bg-[#f5f5f5] shadow-sm">
       <header className="flex h-14 items-center justify-between p-4">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          onClick={signOut}
-          src="https://avatars.githubusercontent.com/u/48112040?s=96&v=4"
-          alt="Profile Picture"
-          className="h-10 w-10 cursor-pointer rounded-full border-[2px]"
-        />
+        {user && user.photoURL && (
+          <div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              onClick={signOut}
+              src={user.photoURL}
+              alt="Profile Picture"
+              className="h-10 w-10 cursor-pointer rounded-full border-[2px]"
+            />
+          </div>
+        )}
         <div className="flex items-center justify-end space-x-4">
           <AnnotationIcon className="sbBtn" />
           <DotsVerticalIcon className="sbBtn" />
