@@ -13,8 +13,6 @@ type IProps = {
 };
 
 export default function ChatPage({ messages, chat }: IProps) {
-  console.log(JSON.parse(messages));
-  console.log(chat);
   const [user] = useAuthState(auth);
   const recipientEmail = getRecipientEmail(chat.users,user?.email as string);
 
@@ -54,8 +52,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     id: chatResponse.id,
     ...chatResponse.data(),
   };
-
-  console.log(chat, messages);
 
   return {
     props: {
