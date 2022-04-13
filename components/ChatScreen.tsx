@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import React from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, chats_url, db, messages_url } from '../firebase';
-import { PaperClipIcon, DotsVerticalIcon } from '@heroicons/react/outline';
+import { PaperClipIcon, DotsVerticalIcon, EmojiHappyIcon, PaperAirplaneIcon, MicrophoneIcon } from '@heroicons/react/outline';
 import { collection, orderBy, query } from 'firebase/firestore';
 import { useCollection } from 'react-firebase-hooks/firestore';
 import Message from './Message';
@@ -50,10 +50,20 @@ export default function ChatScreen() {
         </div>
       </header>
 
-      <div>
-        {/* show message */}
+        {/* show messages */}
+      <div className="p-8 bg-[#e5ded8] min-h-[90vh]">
         <div></div>
       </div>
+
+      {/* Chat Input Message Box */}
+      <form className="flex items-center p-4 sticky bg-white bottom-0 z-100">
+        <EmojiHappyIcon className="h-7"/>
+        <input className="flex-1 border-none outline-none focus:ring-0 rounded-xl p-5 mx-4 sticky bottom-0 bg-[#f5f5f5]" type="text" placeholder="Message..." />
+        <button type="submit">
+          <MicrophoneIcon className="h-7"/>
+          {/* <PaperAirplaneIcon className="h-7 rotate-90"/> */}
+        </button>
+      </form>
     </section>
   );
 }
