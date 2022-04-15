@@ -1,16 +1,19 @@
 import { useRouter } from 'next/router';
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth, chats_url, db, messages_url } from '../firebase';
-import { PaperClipIcon, DotsVerticalIcon, EmojiHappyIcon, PaperAirplaneIcon, MicrophoneIcon } from '@heroicons/react/outline';
-import { collection, orderBy, query } from 'firebase/firestore';
+import { auth, chats_url, db, messages_url, users_url } from '../firebase';
+import { PaperClipIcon, DotsVerticalIcon, EmojiHappyIcon, MicrophoneIcon } from '@heroicons/react/outline';
+import { addDoc, collection, doc, orderBy, query, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { useCollection } from 'react-firebase-hooks/firestore';
 import Message from './Message';
 
 export default function ChatScreen() {
+  const [input, setInput] = useState('');
   const [user] = useAuthState(auth);
+  // const submitMessageButton = useRef(null);
   const router = useRouter();
   const chatId = router.query.id as string;
+  const usersCollectionRef = collection(db, users_url);
   const messagesCollectionRef = collection(db, chats_url, chatId, messages_url);
   const messagesQuery = query(messagesCollectionRef, orderBy('timestamp', 'desc'));
   const [messagesSnapshot] = useCollection(messagesQuery);
@@ -30,6 +33,31 @@ export default function ChatScreen() {
     }
   };
 
+  const sendMessage = (e) => {
+    e.preventDefault();
+    const userId = user?.uid as string;
+    const email = user?.email as string;
+    const photoURL = user?.photoURL as string;
+
+    try {
+      // update last seen date|time
+      updateDoc(doc(db, users_url, userId), {
+        lastSeen: serverTimestamp(),
+      });
+
+      addDoc(messagesCollectionRef, {
+        timestamp: serverTimestamp(),
+        message: input,
+        user: email,
+        photoURL: photoURL,
+      });
+
+      setInput('');
+    } catch (error) {
+      console.log('ChatScreen | send message failed', error);
+    }
+  };
+
   return (
     <section className="z-100 sticky top-0 flex-1 bg-[#f5f5f5]">
       <header className="flex h-20 items-center border-b border-[#f5f5f5] bg-white p-4">
@@ -40,8 +68,8 @@ export default function ChatScreen() {
           </div>
         )}
         <div className="ml-4 flex-1">
-          <h3 className="mb-1 text-sm font-semibold">Received Email</h3>
-          <p className="text-xs">Last seen ...</p>
+          <h3 className="mb-1 font-semibold">Received Email</h3>
+          <p className="text-sm text-gray-500">Last seen ...</p>
         </div>
 
         <div className="flex items-center justify-end space-x-4">
@@ -50,19 +78,26 @@ export default function ChatScreen() {
         </div>
       </header>
 
-        {/* show messages */}
-      <div className="p-8 bg-[#e5ded8] min-h-[90vh]">
-        <div></div>
+      {/* show messages */}
+      <div className="min-h-[90vh] bg-[#e5ded8] p-8">
+        {showMessages()}
+        <div id="end-of-messages"></div>
       </div>
 
       {/* Chat Input Message Box */}
-      <form className="flex items-center p-4 sticky bg-white bottom-0 z-100">
-        <EmojiHappyIcon className="h-7"/>
-        <input className="flex-1 border-none outline-none focus:ring-0 rounded-xl p-5 mx-4 sticky bottom-0 bg-[#f5f5f5]" type="text" placeholder="Message..." />
-        <button type="submit">
-          <MicrophoneIcon className="h-7"/>
-          {/* <PaperAirplaneIcon className="h-7 rotate-90"/> */}
+      <form className="z-100 sticky bottom-0 flex items-center bg-white p-4">
+        <EmojiHappyIcon className="h-7" />
+        <input
+          className="sticky bottom-0 mx-4 flex-1 rounded-xl border-none bg-[#f5f5f5] p-5 outline-none focus:ring-0"
+          type="text"
+          placeholder="Message..."
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+        />
+        <button disabled={!input} onClick={sendMessage} hidden type="submit">
+          Send Message
         </button>
+        <MicrophoneIcon className="h-7" />
       </form>
     </section>
   );
