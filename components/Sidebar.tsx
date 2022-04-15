@@ -86,19 +86,21 @@ export default function Sidebar() {
   // };
 
   return (
-    <aside className="sticky top-0 z-50 border-b bg-[#f5f5f5] shadow-sm">
-      <header className="flex h-14 items-center justify-between p-4">
-        {user && user.photoURL && (
-          <div>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              onClick={signOut}
-              src={user.photoURL}
-              alt="Profile Picture"
-              className="h-10 w-10 cursor-pointer rounded-full border-[2px]"
-            />
-          </div>
-        )}
+    <aside className="border-r flex-[0.45] border-[#f5f5f5] h-screen overflow-y-scroll scrollbar-hide min-w-[300px] max-w-[350px]">
+      <header className="sticky top-0 z-50 flex h-20 items-center justify-between border-b border-[#f5f5f5] bg-white p-4">
+        <div>
+          {user && user.photoURL && (
+            <div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                onClick={signOut}
+                src={user.photoURL}
+                alt="Profile Picture"
+                className="h-10 w-10 cursor-pointer rounded-full border-[2px]"
+              />
+            </div>
+          )}
+        </div>
         <div className="flex items-center justify-end space-x-4">
           <AnnotationIcon className="sbBtn" />
           <DotsVerticalIcon className="sbBtn" />
