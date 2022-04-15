@@ -1,9 +1,9 @@
 import { useRouter } from 'next/router';
 import React, { useRef, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth, chats_url, db, messages_url } from '../firebase';
+import { auth, chats_url, db, messages_url, users_url } from '../firebase';
 import { PaperClipIcon, DotsVerticalIcon, EmojiHappyIcon, MicrophoneIcon } from '@heroicons/react/outline';
-import { collection, orderBy, query } from 'firebase/firestore';
+import { addDoc, collection, doc, orderBy, query, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { useCollection } from 'react-firebase-hooks/firestore';
 import Message from './Message';
 
@@ -13,6 +13,7 @@ export default function ChatScreen() {
   // const submitMessageButton = useRef(null);
   const router = useRouter();
   const chatId = router.query.id as string;
+  const usersCollectionRef = collection(db, users_url);
   const messagesCollectionRef = collection(db, chats_url, chatId, messages_url);
   const messagesQuery = query(messagesCollectionRef, orderBy('timestamp', 'desc'));
   const [messagesSnapshot] = useCollection(messagesQuery);
@@ -34,7 +35,27 @@ export default function ChatScreen() {
 
   const sendMessage = (e) => {
     e.preventDefault();
-    console.log('message sent');
+    const userId = user?.uid as string;
+    const email = user?.email as string;
+    const photoURL = user?.photoURL as string;
+
+    try {
+      // update last seen date|time
+      updateDoc(doc(db, users_url, userId), {
+        lastSeen: serverTimestamp(),
+      });
+
+      addDoc(messagesCollectionRef, {
+        timestamp: serverTimestamp(),
+        message: input,
+        user: email,
+        photoURL: photoURL,
+      });
+
+      setInput('');
+    } catch (error) {
+      console.log('ChatScreen | send message failed', error);
+    }
   };
 
   return (
