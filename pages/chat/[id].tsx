@@ -23,7 +23,7 @@ export default function ChatPage({ messages, chat }: IProps) {
       </Head>
 
       <Sidebar />
-      <ChatScreen />
+      <ChatScreen messages={messages} />
     </div>
   );
 }

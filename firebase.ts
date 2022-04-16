@@ -22,6 +22,6 @@ const authProviderGoogle = new GoogleAuthProvider();
 // Firebase-related constants
 const users_url = 'users';
 const chats_url = 'wa-chats';
-const messages_url = 'wa-chats';
+const messages_url = 'messages';
 
 export { db, auth, authProviderGoogle, users_url, chats_url, messages_url };
