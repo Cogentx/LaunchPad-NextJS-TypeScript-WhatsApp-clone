@@ -50,7 +50,7 @@ export default function ChatScreen({ chat, messages }: IProps) {
     }
   };
   // Send New Message to Firestore DB
-  const sendMessage = (e) => {
+  const sendMessage = (e: any) => {
     e.preventDefault();
 
     const userId = user?.uid as string;
@@ -77,7 +77,7 @@ export default function ChatScreen({ chat, messages }: IProps) {
   };
 
   return (
-    <section className="z-100 sticky top-0 flex-1 bg-[#f5f5f5]">
+    <div className="z-100 sticky top-0 flex-1 bg-[#f5f5f5]">
       <header className="flex h-20 items-center border-b border-[#f5f5f5] bg-white p-4">
         {recipient && recipient.photoURL ? (
           <div>
@@ -127,6 +127,6 @@ export default function ChatScreen({ chat, messages }: IProps) {
         </button>
         <MicrophoneIcon className="h-7" />
       </form>
-    </section>
+    </div>
   );
 }
