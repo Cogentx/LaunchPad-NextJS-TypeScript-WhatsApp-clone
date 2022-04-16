@@ -6,4 +6,16 @@
   .sbBtn {
     @apply inline-flex h-6 w-6 cursor-pointer transition-all duration-150 ease-out hover:scale-125;
   }
+
+  .messageElement {
+    @apply relative m-3 w-fit min-w-[60px] rounded-lg p-4 pb-6 text-right;
+  }
+
+  .sender {
+    @apply ml-auto bg-green-300
+  }
+
+  .receiver {
+    @apply text-left bg-[#f5f5f5]
+  }
 }

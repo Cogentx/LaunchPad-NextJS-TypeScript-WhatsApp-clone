@@ -22,7 +22,7 @@ export default function ChatScreen({ chat, messages }: IProps) {
   const recipientEmail = getRecipientEmail(chat.users, user?.email as string);
   // Messages Snapshot
   const messagesCollectionRef = collection(db, chats_url, chatId, messages_url);
-  const messagesQuery = query(messagesCollectionRef, orderBy('timestamp', 'desc'));
+  const messagesQuery = query(messagesCollectionRef, orderBy('timestamp', 'asc'));
   const [messagesSnapshot] = useCollection(messagesQuery);
   // Recipients Snapshot
   const usersCollectionRef = collection(db, users_url);
