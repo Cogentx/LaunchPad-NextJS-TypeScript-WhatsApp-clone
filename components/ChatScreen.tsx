@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import React, { useRef, useState } from 'react';
+import { useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, chats_url, db, messages_url, users_url } from '../firebase';
 import { PaperClipIcon, DotsVerticalIcon, EmojiHappyIcon, MicrophoneIcon } from '@heroicons/react/outline';
@@ -7,7 +7,11 @@ import { addDoc, collection, doc, orderBy, query, serverTimestamp, updateDoc } f
 import { useCollection } from 'react-firebase-hooks/firestore';
 import Message from './Message';
 
-export default function ChatScreen() {
+type IProps = {
+  messages: any;
+};
+
+export default function ChatScreen({ messages }: IProps) {
   const [input, setInput] = useState('');
   const [user] = useAuthState(auth);
   // const submitMessageButton = useRef(null);
@@ -30,24 +34,29 @@ export default function ChatScreen() {
           }}
         />
       ));
+    } else {
+      return JSON.parse(messages).map((message: any) => (
+        <Message key={message.id} user={message.user} message={message} />
+      ));
     }
   };
 
   const sendMessage = (e) => {
     e.preventDefault();
+
     const userId = user?.uid as string;
     const email = user?.email as string;
     const photoURL = user?.photoURL as string;
 
     try {
       // update last seen date|time
-      updateDoc(doc(db, users_url, userId), {
+      updateDoc(doc(usersCollectionRef, userId), {
         lastSeen: serverTimestamp(),
       });
 
       addDoc(messagesCollectionRef, {
         timestamp: serverTimestamp(),
-        message: input,
+        text: input,
         user: email,
         photoURL: photoURL,
       });
