@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, chats_url, db, messages_url, users_url } from '../firebase';
 import { PaperClipIcon, DotsVerticalIcon, EmojiHappyIcon, MicrophoneIcon } from '@heroicons/react/outline';
@@ -15,6 +15,7 @@ type IProps = {
 };
 
 export default function ChatScreen({ chat, messages }: IProps) {
+  const endOfMessagesRef = useRef(null);
   const [input, setInput] = useState('');
   const [user] = useAuthState(auth);
   const router = useRouter();
@@ -71,9 +72,18 @@ export default function ChatScreen({ chat, messages }: IProps) {
       });
 
       setInput('');
+      scrollToBottom();
     } catch (error) {
       console.log('ChatScreen | send message failed', error);
     }
+  };
+  // Automatically Scroll to last Chat Message
+  const scrollToBottom = () => {
+    const endOfMessages: HTMLElement = endOfMessagesRef && endOfMessagesRef.current!;
+    endOfMessages.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
   };
 
   return (
@@ -109,7 +119,7 @@ export default function ChatScreen({ chat, messages }: IProps) {
       {/* show messages */}
       <div className="min-h-[90vh] bg-[#e5ded8] p-8">
         {showMessages()}
-        <div id="end-of-messages"></div>
+        <div className="mb-14 " ref={endOfMessagesRef}></div>
       </div>
 
       {/* Chat Input Message Box */}
